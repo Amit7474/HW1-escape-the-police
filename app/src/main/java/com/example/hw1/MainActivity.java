@@ -23,13 +23,14 @@ public class MainActivity extends AppCompatActivity {
     private final int LIVES = 3;
     private final int INTERVAL_BETWEEN_NEW_POLICE = 3;
     private final int CAR_INITIAL_POSITION = 16;
-    private int carPosition = CAR_INITIAL_POSITION;
-    private int intervalCounter = 0;
-    private int life = LIVES;
-    private int score = 0;
+    private int carPosition;
+    private int intervalCounter;
+    private int life;
+    private int score;
+    private int interval;
     private ImageView[] car = new ImageView[24];
     private ImageView[] lives = new ImageView[LIVES];
-    private Handler handler;
+    private Handler handler = new Handler();
     private Runnable run;
 
 
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.main_BTN_left:
-                    if (carPosition > 15) {
+                    if (carPosition > CAR_INITIAL_POSITION - 1) {
                         //Checks if there is a police in the LEFT side of the car to determine collision
                         if (car[carPosition - 1].getDrawable() != null) {
                             if (isImageViewSameAsPolice(car[carPosition - 1])) {
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case R.id.main_BTN_right:
-                    if (carPosition < 17) {
+                    if (carPosition < CAR_INITIAL_POSITION + 1) {
                         //Checks if there is a police in the RIGHT side of the car to determine collision
                         if (car[carPosition + 1].getDrawable() != null) {
                             if (isImageViewSameAsPolice(car[carPosition + 1])) {
@@ -116,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
         score = 0;
         intervalCounter = 0;
         life = LIVES;
+        carPosition = CAR_INITIAL_POSITION;
+        interval = 500;
         main_BTN_right.setAlpha(1);
         main_BTN_left.setAlpha(1);
         main_BTN_right.setClickable(true);
@@ -129,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
      * Start an Handler that runs the game
      */
     public void loop() {
-        handler = new Handler();
         run = new Runnable() {
             @Override
             public void run() {
@@ -137,8 +139,10 @@ public class MainActivity extends AppCompatActivity {
                 startTheGame();
             }
         };
-        handler.postDelayed(run, 500);
+
+        handler.postDelayed(run, interval);
     }
+
 
     /**
      * This is all the logic of the game
@@ -162,11 +166,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         //Draw new police on the screen
-        if (intervalCounter == INTERVAL_BETWEEN_NEW_POLICE - 1) {
-            lanchPolice();
+//        if (intervalCounter == INTERVAL_BETWEEN_NEW_POLICE - 1) {
+        if (intervalCounter % INTERVAL_BETWEEN_NEW_POLICE == 2) {
+            launchPolice();
+            //After 20 seconds 2 polices will be launched
+            if (intervalCounter >= 40)
+                launchPolice();
         }
         intervalCounter++;
         score++;
+        if (intervalCounter % 20 == 0) {
+            speedUp();
+        }
     }
 
     /**
@@ -213,9 +224,17 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Generate random number (0-2) that represent column and place new police on the top of that column
      */
-    public void lanchPolice() {
+    public void launchPolice() {
         int newLocation = (int) (Math.random() * 2.9);
         car[newLocation].setImageResource(R.drawable.police);
-        intervalCounter = -1;
+    }
+
+    /**
+     * Increase the speed of the police launcher
+     */
+    public void speedUp() {
+        if (interval > 0) {
+            interval -= 100;
+        }
     }
 }

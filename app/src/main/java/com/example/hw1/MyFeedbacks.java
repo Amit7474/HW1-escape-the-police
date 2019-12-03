@@ -14,7 +14,7 @@ public class MyFeedbacks {
      */
     public static void vibrate(Context context, int duration){
         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-// Vibrate for 500 milliseconds
+// Vibrate for X milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
