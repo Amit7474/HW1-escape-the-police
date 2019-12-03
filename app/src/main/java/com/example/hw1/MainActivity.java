@@ -264,7 +264,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 main_TXT_faster.animate().alpha(0);
-//                anim.cancel();
             }
 
             @Override
