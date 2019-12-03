@@ -6,12 +6,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     private Button main_BTN_right, main_BTN_left;
     private GridLayout main_LAY_gridlayout;
+    private TextView main_TXT_faster;
     private LinearLayout main_LAY_linearLayout;
     private final int LIVES = 3;
     private final int INTERVAL_BETWEEN_NEW_POLICE = 3;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         main_LAY_gridlayout = findViewById(R.id.main_LAY_gridview);
         main_BTN_left = findViewById(R.id.main_BTN_left);
         main_BTN_right = findViewById(R.id.main_BTN_right);
+        main_TXT_faster = findViewById(R.id.main_TXT_faster);
         main_BTN_left.setOnClickListener(changeCarPosition);
         main_BTN_right.setOnClickListener(changeCarPosition);
 
@@ -110,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 car[i].setImageResource(R.drawable.car);
             }
         }
+        //Initialize the hearts
         for (int i = 0; i < lives.length; i++) {
             lives[i] = (ImageView) main_LAY_linearLayout.getChildAt(i);
             lives[i].setImageResource(R.drawable.heart);
@@ -119,12 +124,8 @@ public class MainActivity extends AppCompatActivity {
         life = LIVES;
         carPosition = CAR_INITIAL_POSITION;
         interval = 500;
-        main_BTN_right.setAlpha(1);
-        main_BTN_left.setAlpha(1);
-        main_BTN_right.setClickable(true);
-        main_BTN_left.setClickable(true);
 
-//        startTheGame();
+//start the game
         loop();
     }
 
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }
         intervalCounter++;
         score++;
-        if (intervalCounter % 20 == 0) {
+        if (intervalCounter % 20 == 0 && interval > 100) {
             speedUp();
         }
     }
@@ -216,9 +217,27 @@ public class MainActivity extends AppCompatActivity {
         if (life == 0) {
             gameOver();
         }
-        //Removes the heart from the screen with animation
-        MyAnimations.remove(lives[life]);
         police.setImageResource(0);
+
+        //Removes the heart from the screen with animation
+        Animation removeHeart = AnimationUtils.loadAnimation(this, R.anim.remove_from_screen);
+        removeHeart.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                lives[life].setImageResource(0);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        lives[life].startAnimation(removeHeart);
     }
 
     /**
@@ -233,8 +252,27 @@ public class MainActivity extends AppCompatActivity {
      * Increase the speed of the police launcher
      */
     public void speedUp() {
-        if (interval > 0) {
-            interval -= 100;
-        }
+        interval -= 100;
+
+        //Show 'Faster!' text with scale-up animation
+        Animation scaleFasterText = AnimationUtils.loadAnimation(this, R.anim.show_text_on_screen);
+        scaleFasterText.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                main_TXT_faster.animate().alpha(1);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                main_TXT_faster.animate().alpha(0);
+//                anim.cancel();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        main_TXT_faster.startAnimation(scaleFasterText);
     }
 }

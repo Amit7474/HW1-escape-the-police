@@ -40,6 +40,25 @@
             app:srcCompat="@drawable/heart" />
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/main_TXT_faster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Faster!"
+            android:textSize="100dp"
+            android:textColor="@color/faster"
+            android:textStyle="bold"
+            android:alpha="0"
+            />
+
+    </LinearLayout>
 
     <GridLayout
         android:id="@+id/main_LAY_gridview"
