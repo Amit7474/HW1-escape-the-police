@@ -167,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         //Draw new police on the screen
-//        if (intervalCounter == INTERVAL_BETWEEN_NEW_POLICE - 1) {
         if (intervalCounter % INTERVAL_BETWEEN_NEW_POLICE == 2) {
             launchPolice();
             //After 20 seconds 2 polices will be launched
