@@ -1,3 +1,11 @@
+/*
+ * *
+ *  * Created by Amit kremer ID 302863253 on 12/4/19 11:25 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 12/3/19 1:24 PM
+ *
+ */
+
 package com.example.hw1;
 
 import android.content.Context;

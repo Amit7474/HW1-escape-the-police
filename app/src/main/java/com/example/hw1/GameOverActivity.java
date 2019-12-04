@@ -1,3 +1,11 @@
+/*
+ * *
+ *  * Created by Amit kremer ID 302863253 on 12/4/19 11:25 AM
+ *  * Copyright (c) 2019 . All rights reserved.
+ *  * Last modified 11/28/19 9:30 AM
+ *
+ */
+
 package com.example.hw1;
 
 import androidx.appcompat.app.AppCompatActivity;
