@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private int intervalCounter;
     private int life;
     private int score;
-    private int interval;
+    private int intervalDuration;
     private ImageView[] car = new ImageView[24];
     private ImageView[] lives = new ImageView[LIVES];
     private Handler handler = new Handler();
@@ -70,10 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.main_BTN_left:
                     if (carPosition > CAR_INITIAL_POSITION - 1) {
                         //Checks if there is a police in the LEFT side of the car to determine collision
-                        if (car[carPosition - 1].getDrawable() != null) {
-                            if (isImageViewSameAsPolice(car[carPosition - 1])) {
-                                collision(car[carPosition - 1]);
-                            }
+                        if ((car[carPosition - 1].getDrawable() != null) && (isImageViewSameAsPolice(car[carPosition - 1]))) {
+                            collision(car[carPosition - 1]);
                         }
                         moveLeft();
                     }
@@ -81,10 +79,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.main_BTN_right:
                     if (carPosition < CAR_INITIAL_POSITION + 1) {
                         //Checks if there is a police in the RIGHT side of the car to determine collision
-                        if (car[carPosition + 1].getDrawable() != null) {
-                            if (isImageViewSameAsPolice(car[carPosition + 1])) {
-                                collision(car[carPosition + 1]);
-                            }
+                        if ((car[carPosition + 1].getDrawable() != null) && (isImageViewSameAsPolice(car[carPosition + 1]))) {
+                            collision(car[carPosition + 1]);
                         }
                         moveRight();
                     }
@@ -112,16 +108,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Init the game parameters
+     * initializes the game parameters
      */
     public void init() {
+        //initializes the main Grid layout
         for (int i = 0; i < car.length; i++) {
             car[i] = (ImageView) main_LAY_gridlayout.getChildAt(i);
             if (i == CAR_INITIAL_POSITION) {
                 car[i].setImageResource(R.drawable.car);
             }
         }
-        //Initialize the hearts
+        //initializes the hearts
         for (int i = 0; i < lives.length; i++) {
             lives[i] = (ImageView) main_LAY_linearLayout.getChildAt(i);
             lives[i].setImageResource(R.drawable.heart);
@@ -130,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
         intervalCounter = 0;
         life = LIVES;
         carPosition = CAR_INITIAL_POSITION;
-        interval = 500;
+        intervalDuration = 500;
 
-//start the game
+        //start the game
         loop();
     }
 
@@ -148,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        handler.postDelayed(run, interval);
+        handler.postDelayed(run, intervalDuration);
     }
 
 
@@ -182,7 +179,8 @@ public class MainActivity extends AppCompatActivity {
         }
         intervalCounter++;
         score++;
-        if (intervalCounter % 20 == 0 && interval > 100) {
+        //Every 10 seconds the game interval will decrease and the game will run faster
+        if (intervalCounter % 20 == 0 && intervalDuration > 200) {
             speedUp();
         }
     }
@@ -258,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
      * Increase the speed of the police launcher
      */
     public void speedUp() {
-        interval -= 100;
+        intervalDuration -= 100;
 
         //Show 'Faster!' text with scale-up animation
         Animation scaleFasterText = AnimationUtils.loadAnimation(this, R.anim.show_text_on_screen);
@@ -279,5 +277,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         main_TXT_faster.startAnimation(scaleFasterText);
+    }
+
+    /**
+     * When the player leaves the activity it stops
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(run);
+    }
+
+    /**
+     * When the player returns to the activity it starts from the place he left it
+     */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        handler.postDelayed(run, intervalDuration);
     }
 }
