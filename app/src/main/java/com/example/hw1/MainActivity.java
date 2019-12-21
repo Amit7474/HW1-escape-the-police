@@ -33,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private GridLayout main_LAY_gridlayout;
     private TextView main_TXT_great, main_TXT_bonus;
     private LinearLayout main_LAY_linearLayout;
-    private final int LIVES = 3;
-    private final int CAR_INITIAL_POSITION = 16;
+    private final int LIVES = 3, COLUMNS = 5, ROWS = 5, CAR_INITIAL_POSITION = 17;
     private int intervalBetweenNewPolice;
     private int carPosition;
     private int level;
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private int intervalDuration;
     private MySharedPref msp;
     private int[] obstacles = {R.drawable.car, R.drawable.police, R.drawable.coin};
-    private ImageView[] car = new ImageView[24];
+    private ImageView[] car = new ImageView[COLUMNS * ROWS];
     private ImageView[] lives = new ImageView[LIVES];
     private Handler handler = new Handler();
     private Runnable run;
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void moveRight() {
             //TODO: create coin scenario and coin check
-            if (carPosition < CAR_INITIAL_POSITION + 1) {
+            if (carPosition < CAR_INITIAL_POSITION + 2) {
                 //Checks if there is a police in the RIGHT side of the car to determine collision
                 if (car[carPosition + 1].getDrawable() != null) {
                     if (typeOfObjectAhead(car[carPosition + 1], "police")) {
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void moveLeft() {
-            if (carPosition > CAR_INITIAL_POSITION - 1) {
+            if (carPosition > CAR_INITIAL_POSITION - 2) {
                 //Checks if there is a police in the LEFT side of the car to determine collision
                 if (car[carPosition - 1].getDrawable() != null) {
                     if (typeOfObjectAhead(car[carPosition - 1], "police")) {
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void advanceImagview(ImageView _car, int resID) {
         int index = Arrays.asList(car).indexOf(_car);
-        car[index + 3].setImageResource(resID);
+        car[index + COLUMNS].setImageResource(resID);
         car[index].setImageResource(0);
     }
 
@@ -248,27 +247,27 @@ public class MainActivity extends AppCompatActivity {
      * This is all the logic of the game
      */
     public void startTheGame() {
-        for (int i = car.length - 1; i > 2; i--) {
+        for (int i = car.length - 1; i > 4; i--) {
             //Remove all the polices that already pass the car
-            if (i > 20) {
+            if (i > 19) {
                 car[i].setImageResource(0);
             }
             //If there is an non-empty ImageView(police/coin), we Compare that ImageView with the ImageView in row ahead to determinate collision OR bonus
-            if ((car[i - 3].getDrawable() != null)) {
+            if ((car[i - COLUMNS].getDrawable() != null)) {
                 if (car[i].getDrawable() == null) {
                     //move the Police OR the coin 1 row forward
-                    if (typeOfObjectAhead(car[i - 3], "police"))
-                        advanceImagview(car[i - 3], obstacles[1]);
+                    if (typeOfObjectAhead(car[i - COLUMNS], "police"))
+                        advanceImagview(car[i - COLUMNS], obstacles[1]);
 
-                    else if (typeOfObjectAhead(car[i - 3], "coin")) {
-                        advanceImagview(car[i - 3], obstacles[2]);
+                    else if (typeOfObjectAhead(car[i - COLUMNS], "coin")) {
+                        advanceImagview(car[i - COLUMNS], obstacles[2]);
                     }
                 } else if (car[i].getDrawable() != null) {
                     //Collision OR bonus
-                    if (typeOfObjectAhead(car[i - 3], "police")) {
-                        collision(car[i - 3]);
-                    } else if (typeOfObjectAhead(car[i - 3], "coin")) {
-                        bonus(car[i - 3]);
+                    if (typeOfObjectAhead(car[i - COLUMNS], "police")) {
+                        collision(car[i - COLUMNS]);
+                    } else if (typeOfObjectAhead(car[i - COLUMNS], "coin")) {
+                        bonus(car[i - COLUMNS]);
                     }
                 }
             }
@@ -380,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
      * Generate random number (0-2) that represent column and place new police OR coin on the top of that column
      */
     public void launchObstacle(int obstacle) {
-        int newLocation = (int) (Math.random() * 2.9);
+        int newLocation = (int) (Math.random() * COLUMNS);
         car[newLocation].setImageResource(obstacles[obstacle]);
     }
 

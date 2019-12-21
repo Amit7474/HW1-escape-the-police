@@ -70,11 +70,18 @@
         android:id="@+id/main_LAY_gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:rowCount="8"
-        android:columnCount="3">
+        android:layout_centerInParent="true"
+        android:rowCount="5"
+        android:columnCount="5">
 
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:layout_margin="5dp"/>
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
