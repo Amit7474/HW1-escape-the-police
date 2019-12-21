@@ -13,24 +13,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="150dp"
+        android:layout_marginTop="200dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/gameOver_TXT_score"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="40dp"
             android:background="@drawable/roundedbutton"
-            android:text="" />
+            android:gravity="center_horizontal"
+            android:text=""
+            android:textAllCaps="false"
+            android:textSize="40dp" />
 
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/gameOver_BTN_playAgain"
@@ -38,7 +38,28 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:background="@drawable/roundedbutton"
-                android:text="Play Again!" />
+                android:text="Play Again!"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/gameOver_BTN_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:clickable="false"
+                android:alpha="0.5"
+                android:background="@drawable/roundedbutton"
+                android:text="Save Score"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/gameOver_BTN_scoreList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/roundedbutton"
+                android:text="Score List"
+                android:textAllCaps="false" />
 
         </LinearLayout>
     </LinearLayout>

@@ -8,17 +8,32 @@
 
 package com.example.hw1;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class Start_Menu_Activity extends AppCompatActivity {
 
     private Button menu_BTN_start;
+    private Button menu_BTN_settings;
+    private MyLocationSensor mls;
 
 
     @Override
@@ -27,8 +42,12 @@ public class Start_Menu_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_start__manu_);
 
         menu_BTN_start = findViewById(R.id.menu_BTN_start);
+        menu_BTN_settings = findViewById(R.id.menu_BTN_settings);
         menu_BTN_start.setOnClickListener(moveToMainActivity);
+        menu_BTN_settings.setOnClickListener(moveToSetteingsAcivity);
 
+        //Start collect location data
+        mls = new MyLocationSensor(this);
     }
 
     /**
@@ -39,6 +58,20 @@ public class Start_Menu_Activity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
+
         }
     };
+
+    /**
+     * Listener of the Settings button. Creates intent and move to the Settings activity
+     */
+    View.OnClickListener moveToSetteingsAcivity = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
+        }
+    };
+
+
 }
