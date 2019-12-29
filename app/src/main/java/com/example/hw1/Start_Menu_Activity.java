@@ -31,7 +31,7 @@ import android.widget.EditText;
 
 public class Start_Menu_Activity extends AppCompatActivity {
 
-    private Button menu_BTN_start;
+    private Button menu_BTN_start, menu_BTN_scoreList;
     private Button menu_BTN_settings;
     private MyLocationSensor mls;
 
@@ -41,8 +41,11 @@ public class Start_Menu_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start__manu_);
 
+        menu_BTN_scoreList = findViewById(R.id.menu_BTN_scoreList);
         menu_BTN_start = findViewById(R.id.menu_BTN_start);
         menu_BTN_settings = findViewById(R.id.menu_BTN_settings);
+
+        menu_BTN_scoreList.setOnClickListener(moveToMapActivity);
         menu_BTN_start.setOnClickListener(moveToMainActivity);
         menu_BTN_settings.setOnClickListener(moveToSetteingsAcivity);
 
@@ -57,6 +60,18 @@ public class Start_Menu_Activity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+
+        }
+    };
+
+    /**
+     * Listener of the Start button. Creates intent and move to the game activity
+     */
+    View.OnClickListener moveToMapActivity = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
             startActivity(intent);
 
         }

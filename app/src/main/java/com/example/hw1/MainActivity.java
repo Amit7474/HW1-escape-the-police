@@ -236,7 +236,11 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(run, intervalDuration);
     }
 
-
+    /**
+     * Takes an ImageView and moves it 1 row forward
+     * @param _car
+     * @param resID
+     */
     private void advanceImagview(ImageView _car, int resID) {
         int index = Arrays.asList(car).indexOf(_car);
         car[index + COLUMNS].setImageResource(resID);

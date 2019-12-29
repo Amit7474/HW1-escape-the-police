@@ -18,10 +18,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -30,52 +38,118 @@ public class GameOverActivity extends AppCompatActivity {
     private Button gameOver_BTN_playAgain, gameOver_BTN_save, gameOver_BTN_scoreList;
     private TextView gameOver_TXT_score;
     private MyMediaPlayer player;
-    private Location playerLocation = null;
     private String playerName;
     private int playerScore;
-    private TreeSet<Record> scoreSet = new TreeSet<Record>();
-//    private ArrayList<Record> scoreSet = new ArrayList<>();
+    private double latitude, longitude;
+    private MySharedPref msp;
+    private ArrayList<Record> scoreList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
-
-
-        gameOver_BTN_playAgain = findViewById(R.id.gameOver_BTN_playAgain);
-        gameOver_TXT_score = findViewById(R.id.gameOver_TXT_score);
-        gameOver_BTN_scoreList = findViewById(R.id.gameOver_BTN_scoreList);
-        gameOver_BTN_save = findViewById(R.id.gameOver_BTN_save);
-
-        //Play the 'Game over' sound
-        player = new MyMediaPlayer(this, 1);
-        player.start();
+        scoreList = new ArrayList<>();
+        findViews();
 
         //Get the player's score from the game activity by the intent
         Intent intent = getIntent();
         playerScore = getScoreFromIntemt(intent);
         gameOver_TXT_score.setText("Your score is " + playerScore + "pts");
 
+        //Check if the player's score is high enough for save
+        if (isOKtoSave()) {
+            changeButtonConfig(gameOver_BTN_save, true);
+            if (scoreList.size() == 10)
+                scoreList.remove(scoreList.get(scoreList.size() - 1));
+        } else {
+            changeButtonConfig(gameOver_BTN_save, false);
+            Toast.makeText(this, "Your score CANNOT enter the record list!", Toast.LENGTH_SHORT).show();
+        }
 
+        //Play the 'Game over' sound
+        player = new MyMediaPlayer(this, 1);
+        player.start();
+
+        //Click listeners
         gameOver_BTN_playAgain.setOnClickListener(playAgain);
         gameOver_BTN_save.setOnClickListener(saveScore);
         gameOver_BTN_scoreList.setOnClickListener(printScore);
 
     }
 
+    /**
+     * Gets all the player's details and determines if he should be saved
+     *
+     * @return boolean value
+     */
+    private boolean isOKtoSave() {
+        getPlayerLocationFromShared();
+        getSoreListFromShared();
+        if (scoreList.isEmpty() || scoreList.size() < 10) {
+            return true;
+        } else {
+            Record lastRecord = getTheLastRecord();
+            return playerScore - lastRecord.getScore() > 0;
+        }
+    }
+
+    /**
+     * Gets the score list(if available) from SharedPreferences
+     */
+    private void getSoreListFromShared() {
+        scoreList = msp.getArrayList("scoreList", "na");
+    }
+
+    private Record getTheLastRecord() {
+        return scoreList.get(scoreList.size() - 1);
+
+    }
+
+    /**
+     * Gets the player's location from SharedPreferences
+     */
+    private void getPlayerLocationFromShared() {
+        msp = new MySharedPref(this);
+        latitude = (double) msp.getFloat("playerLatitude", 0f);
+        longitude = (double) msp.getFloat("playerLongitude", 0f);
+    }
+
+    /**
+     * Gets a button and boolean value and sets the button to "click mode" OR "disable mode"
+     *
+     * @param btn
+     * @param shouldBeEnable
+     */
+    private void changeButtonConfig(Button btn, boolean shouldBeEnable) {
+        if (shouldBeEnable) {
+            btn.setAlpha(1);
+            btn.setClickable(true);
+        } else {
+            btn.setAlpha(0.5f);
+            btn.setClickable(false);
+        }
+    }
+
+    /**
+     * Attach every view to id
+     */
+    private void findViews() {
+        gameOver_BTN_playAgain = findViewById(R.id.gameOver_BTN_playAgain);
+        gameOver_TXT_score = findViewById(R.id.gameOver_TXT_score);
+        gameOver_BTN_scoreList = findViewById(R.id.gameOver_BTN_scoreList);
+        gameOver_BTN_save = findViewById(R.id.gameOver_BTN_save);
+    }
+
 
     View.OnClickListener printScore = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-            Iterator<Record> iterator = scoreSet.descendingIterator();
-            while (iterator.hasNext()) {
-                Log.i("score", iterator.next().toString() + "");
+            for (int i = 0; i < scoreList.size(); i++) {
+                Log.i("Score", scoreList.get(i) + "");
             }
-            Log.i("dsds", "" + scoreSet.size());
-//            for (int i = 0; i < scoreSet.size(); i++) {
-//                Log.i("kcdsa", scoreSet.get(i).toString());
-//            }
+
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            startActivity(intent);
         }
     };
     /**
@@ -113,7 +187,7 @@ public class GameOverActivity extends AppCompatActivity {
      * Open input alert dialog, gets the player's name, creates a new record and adds it to TreeSet
      */
     public void getPlayerName() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter your name");
         // Set up the input
         final EditText input = new EditText(this);
@@ -125,9 +199,26 @@ public class GameOverActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 playerName = input.getText().toString();
-                scoreSet.add(new Record(playerName, playerScore, playerLocation));
+                if (playerName.isEmpty()) {
+                    //Notify the player that he cannot save score with no name
+                    Toast.makeText(GameOverActivity.this, "Name is undefined", Toast.LENGTH_SHORT).show();
+                } else {
+                    scoreList.add(new Record(playerName, playerScore, latitude, longitude));
+                    changeButtonConfig(gameOver_BTN_save, false);
+                    changeButtonConfig(gameOver_BTN_scoreList, true);
+                    sortAndSaveScoreList();
+                }
             }
         });
         builder.show();
+    }
+
+    /**
+     * Sorts the score List and saves it in SharedPreferences
+     */
+    private void sortAndSaveScoreList() {
+        Collections.sort(scoreList);
+        //solve the problem with Json and raw type on record class
+        msp.putArrayList(scoreList);
     }
 }

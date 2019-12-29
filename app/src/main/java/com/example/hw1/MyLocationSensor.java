@@ -9,6 +9,7 @@
 package com.example.hw1;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -24,20 +25,18 @@ public class MyLocationSensor {
     private LocationListener locationListener;
     private MySharedPref msp;
 
-    public MyLocationSensor(Start_Menu_Activity start_menu_activity) {
-
+    public MyLocationSensor(Activity activity) {
         //Location Settings
-        msp = new MySharedPref(start_menu_activity);
-        locationManager = (LocationManager) start_menu_activity.getSystemService(Context.LOCATION_SERVICE);
+        msp = new MySharedPref(activity);
+        resetLatLong();
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
-                msp.putString("playerLongitude", longitude + "");
-                msp.putString("playerLatitude", latitude + "");
-                Log.d("Location", location + "");
-
+                msp.putFloat("playerLongitude", (float) longitude);
+                msp.putFloat("playerLatitude", (float) latitude);
             }
 
             @Override
@@ -56,12 +55,20 @@ public class MyLocationSensor {
             }
         };
 
-        if (ContextCompat.checkSelfPermission(start_menu_activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(start_menu_activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
 
 
+    }
+
+    /**
+     * Clear the LatLong from previous player
+     */
+    private void resetLatLong(){
+        msp.putFloat("playerLongitude", (float) 0);
+        msp.putFloat("playerLatitude", (float) 0);
     }
 }

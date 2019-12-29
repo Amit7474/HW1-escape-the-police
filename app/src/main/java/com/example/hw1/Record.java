@@ -8,8 +8,6 @@
 
 package com.example.hw1;
 
-import android.location.Location;
-
 public class Record implements Comparable<Record> {
 
     private String name;
@@ -17,11 +15,11 @@ public class Record implements Comparable<Record> {
     private double longitude;
     private double latitude;
 
-    public Record(String name, int score, Location location) {
+    public Record(String name, int score, double lat, double lon) {
         this.name = name;
         this.score = score;
-        this.longitude = location.getLongitude();
-        this.latitude = location.getLatitude();
+        this.longitude = lon;
+        this.latitude = lat;
     }
 
     public String getName() {
@@ -42,19 +40,15 @@ public class Record implements Comparable<Record> {
 
     @Override
     public String toString() {
-        return "Record{" +
-                "name='" + this.getName() + '\'' +
-                ", score=" + this.getScore() +
-                ", longitude=" + this.getLongitude() +
-                ", latitude=" + this.getLatitude() +
-                '}';
+        return this.getName() + "           (Score: "+ this.getScore()+")";
     }
 
     @Override
     public int compareTo(Record o) {
-        return this.score - o.score;
+        return o.score - this.score;
     }
 
 
 }
+
 
